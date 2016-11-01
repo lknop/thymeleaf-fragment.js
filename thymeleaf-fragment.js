@@ -3,16 +3,16 @@
  * 
  * See: https://github.com/BlackPepperSoftware/thymeleaf-fragment.js
  */
-function ThymeleafFragment() {
+function ThymeleafFragment(options) {
 
-	// Prefix that gets prepended to view names when building a URL
-	var templatePrefix = "";
+	var defaultOptions = {
+		templatePrefix: "", // Prefix that gets prepended to view names when building a URL
+		templateSuffix: ".html", // Suffix that gets appended to view names when building a URL
+		maxLevel: 5, // Max level of recursion after which processing will stop
+		skipAutorun: false // overriden to true if processing was called from another script
+	}
 
-	// Suffix that gets appended to view names when building a URL
-	var templateSuffix = ".html";
-
-	// Max level of recursion after which processing will stop
-	var maxLevel = 5;
+	var opts = $.extend({}, defaultOptions, options || {});
 
 	this.processAttributes = function() {
 		// Hold off scripts waiting for the document to be ready
@@ -38,7 +38,7 @@ function ThymeleafFragment() {
 
 		$.when.apply(null, promises).done(function() {
 			var moreFragments = $("[th\\:include]").length > 0 || $("[th\\:replace]").length > 0;
-			if (moreFragments && level < maxLevel) {
+			if (moreFragments && level < opts.maxLevel) {
 				processLevel(level + 1); // recurse if necessary
 			} else {
 				// Release scripts once all fragments have been processed recursively
@@ -64,7 +64,7 @@ function ThymeleafFragment() {
 
 	var resolveTemplate = function(templateName) {
 		var link = document.createElement("a");
-		link.href = templatePrefix + templateName + templateSuffix;
+		link.href = opts.templatePrefix + templateName + opts.templateSuffix;
 		return link.href;
 	}
 
@@ -83,4 +83,9 @@ function ThymeleafFragment() {
 	}
 }
 
-new ThymeleafFragment().processAttributes();
+(function() {
+    var templateOptions = $('head').data('fragmentOptions');
+    if (!templateOptions || !templateOptions.skipAutorun) {
+        new ThymeleafFragment(templateOptions).processAttributes();
+    }
+})();
