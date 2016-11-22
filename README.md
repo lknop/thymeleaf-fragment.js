@@ -71,6 +71,12 @@ When prototyping templates locally fragments are loaded from the local file syst
 google-chrome --allow-file-access-from-files
 ```
 
+To disable the security check in Firefox:
+1. Go to `about:config`
+2. Find `security.fileuri.strict_origin_policy` parameter
+3. Set it to `false`
+
+
 Note that this is not required if you [preview the templates directly from an IDE such as IntelliJ IDEA](https://www.jetbrains.com/idea/help/previewing-pages-with-web-contents-in-a-browser.html). This is because the templates are loaded from IntelliJ IDEA's local HTTP server and not the local file system.
 
 Alternatively, you may wish to use a tool like [live-server](https://www.npmjs.com/package/live-server) to serve up your local files through a local HTTP server.
